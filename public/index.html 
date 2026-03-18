@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Rhythm</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:    #0D1524;
+    --bg2:   #131D2E;
+    --bg3:   #1A2540;
+    --bg4:   #222F4A;
+    --ivory: #F0EAD6;
+    --ivory2:#C8BFA8;
+    --ivory3:#7A7264;
+    --rule:  rgba(240,234,214,0.08);
+    --rule2: rgba(240,234,214,0.05);
+  }
+  html, body {
+    background: var(--bg);
+    color: var(--ivory);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  #app {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 0 100px;
+    min-height: 100vh;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 32px 28px 0;
+  }
+  .wordmark {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    letter-spacing: 0.05em;
+    color: var(--ivory);
+  }
+  .date-badge {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ivory3);
+    font-weight: 400;
+  }
+  .mode-row {
+    display: flex;
+    padding: 22px 28px 0;
+  }
+  .mode-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 7px 20px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ivory3);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .mode-btn:first-child { border-radius: 2px 0 0 2px; }
+  .mode-btn:last-child  { border-radius: 0 2px 2px 0; border-left: none; }
+  .mode-btn.active {
+    background: var(--ivory);
+    color: var(--bg);
+    border-color: var(--ivory);
+  }
+  hr.rule {
+    border: none;
+    border-top: 1px solid var(--rule2);
+    margin: 28px 28px;
+  }
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ivory3);
+    font-weight: 500;
+    padding: 0 28px;
+    margin-bottom: 12px;
+  }
+  .today-block { padding: 0 28px; }
+  .day-type {
+    font-family: 'DM Serif Display', serif;
+    font-size: 40px;
+    line-height: 1.1;
+    color: var(--ivory);
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+  .day-type em { font-style: italic; color: var(--ivory2); }
+  .day-directive {
+    font-size: 14px;
+    color: var(--ivory3);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+  .signals { padding: 0 28px; display: grid; gap: 13px; }
+  .signal-row { display: flex; align-items: center; gap: 14px; }
+  .signal-label {
+    font-size: 12px;
+    color: var(--ivory3);
+    width: 46px;
+    flex-shrink: 0;
+    font-weight: 300;
+  }
+  .signal-options { display: flex; gap: 6px; flex: 1; }
+  .sig-btn {
+    flex: 1;
+    padding: 9px 0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ivory3);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.18s;
+    font-weight: 300;
+  }
+  .sig-btn:hover { border-color: rgba(240,234,214,0.2); color: var(--ivory2); background: var(--bg3); }
+  .sig-btn.active { background: var(--ivory); color: var(--bg); border-color: var(--ivory); font-weight: 500; }
+  .plan-block { padding: 0 28px; }
+  .plan-row { display: flex; gap: 18px; margin-bottom: 16px; align-items: flex-start; }
+  .plan-cat {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ivory3);
+    width: 36px;
+    flex-shrink: 0;
+    padding-top: 3px;
+  }
+  .plan-text { font-size: 14px; color: var(--ivory2); line-height: 1.7; font-weight: 300; }
+  .action-block {
+    margin: 0 28px;
+    padding: 22px 24px;
+    background: var(--bg3);
+    border-radius: 3px;
+    border: 1px solid rgba(240,234,214,0.07);
+  }
+  .action-block .eyebrow { padding: 0; margin-bottom: 10px; }
+  .action-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    line-height: 1.45;
+    color: var(--ivory);
+    font-style: italic;
+  }
+  .pattern-text {
+    padding: 0 28px;
+    font-size: 13px;
+    color: var(--ivory3);
+    font-style: italic;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+  .loading-state { padding: 0 28px; }
+  .loading-line {
+    height: 12px;
+    background: var(--bg3);
+    border-radius: 2px;
+    margin-bottom: 12px;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 0.7; } }
+  .night-block { padding: 0 28px; }
+  .night-q {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    line-height: 1.3;
+    color: var(--ivory);
+    margin-bottom: 22px;
+  }
+  .night-opts { display: flex; gap: 8px; margin-bottom: 28px; }
+  .night-btn {
+    flex: 1;
+    padding: 12px 0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ivory3);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.18s;
+    font-weight: 300;
+  }
+  .night-btn:hover { border-color: rgba(240,234,214,0.2); color: var(--ivory2); }
+  .night-btn.active { background: var(--ivory); color: var(--bg); border-color: var(--ivory); font-weight: 500; }
+  .affect-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+  .affect-tag {
+    padding: 7px 15px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ivory3);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.18s;
+    font-weight: 300;
+  }
+  .affect-tag:hover { color: var(--ivory2); border-color: rgba(240,234,214,0.2); }
+  .affect-tag.active { border-color: rgba(240,234,214,0.35); color: var(--ivory); background: var(--bg3); }
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .error-msg { padding: 0 28px; font-size: 13px; color: #c07070; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <span class="wordmark">Rhythm</span>
+    <span class="date-badge" id="date-display"></span>
+  </div>
+  <div class="mode-row">
+    <button class="mode-btn active" onclick="setMode('morning',this)">Morning</button>
+    <button class="mode-btn" onclick="setMode('night',this)">Night</button>
+  </div>
+  <div id="morning-view">
+    <hr class="rule">
+    <p class="eyebrow">Today</p>
+    <div class="today-block">
+      <div class="day-type" id="day-type"><em>Set your signals.</em></div>
+      <div class="day-directive" id="day-directive">Four taps. Your direction follows.</div>
+    </div>
+    <hr class="rule">
+    <p class="eyebrow">Signals</p>
+    <div class="signals">
+      <div class="signal-row">
+        <span class="signal-label">Energy</span>
+        <div class="signal-options">
+          <button class="sig-btn" onclick="setSignal('energy',0,this)">Low</button>
+          <button class="sig-btn" onclick="setSignal('energy',1,this)">Medium</button>
+          <button class="sig-btn" onclick="setSignal('energy',2,this)">High</button>
+        </div>
+      </div>
+      <div class="signal-row">
+        <span class="signal-label">Mood</span>
+        <div class="signal-options">
+          <button class="sig-btn" onclick="setSignal('mood',0,this)">Low</button>
+          <button class="sig-btn" onclick="setSignal('mood',1,this)">Neutral</button>
+          <button class="sig-btn" onclick="setSignal('mood',2,this)">Good</button>
+        </div>
+      </div>
+      <div class="signal-row">
+        <span class="signal-label">Sleep</span>
+        <div class="signal-options">
+          <button class="sig-btn" onclick="setSignal('sleep',0,this)">Poor</button>
+          <button class="sig-btn" onclick="setSignal('sleep',1,this)">OK</button>
+          <button class="sig-btn" onclick="setSignal('sleep',2,this)">Great</button>
+        </div>
+      </div>
+      <div class="signal-row">
+        <span class="signal-label">Focus</span>
+        <div class="signal-options">
+          <button class="sig-btn" onclick="setSignal('focus',0,this)">Low</button>
+          <button class="sig-btn" onclick="setSignal('focus',1,this)">Medium</button>
+          <button class="sig-btn" onclick="setSignal('focus',2,this)">Sharp</button>
+        </div>
+      </div>
+    </div>
+    <div id="loading-area" style="display:none;">
+      <hr class="rule">
+      <div class="loading-state">
+        <div class="loading-line" style="width:68%"></div>
+        <div class="loading-line" style="width:50%"></div>
+        <div class="loading-line" style="width:78%"></div>
+        <div class="loading-line" style="width:44%"></div>
+      </div>
+    </div>
+    <div id="plan-area" style="display:none;">
+      <hr class="rule">
+      <p class="eyebrow">Your rhythm plan</p>
+      <div class="plan-block" id="plan-content"></div>
+      <hr class="rule">
+      <div class="action-block">
+        <p class="eyebrow">Priority</p>
+        <p class="action-text" id="action-text"></p>
+      </div>
+      <hr class="rule">
+      <p class="eyebrow">Pattern</p>
+      <p class="pattern-text" id="pattern-text"></p>
+    </div>
+    <div id="error-area" style="display:none; margin-top:16px;">
+      <p class="error-msg" id="error-msg"></p>
+    </div>
+  </div>
+  <div id="night-view" style="display:none;">
+    <hr class="rule">
+    <div class="night-block">
+      <p class="eyebrow">Night check</p>
+      <p class="night-q">Did you follow your rhythm today?</p>
+      <div class="night-opts">
+        <button class="night-btn" onclick="pickNight(this)">Yes</button>
+        <button class="night-btn" onclick="pickNight(this)">Somewhat</button>
+        <button class="night-btn" onclick="pickNight(this)">No</button>
+      </div>
+      <p class="eyebrow" style="margin-bottom:14px;">What affected your day?</p>
+      <div class="affect-tags">
+        <button class="affect-tag" onclick="this.classList.toggle('active')">Poor sleep</button>
+        <button class="affect-tag" onclick="this.classList.toggle('active')">Overcommitted</button>
+        <button class="affect-tag" onclick="this.classList.toggle('active')">Diet</button>
+        <button class="affect-tag" onclick="this.classList.toggle('active')">Stress</button>
+        <button class="affect-tag" onclick="this.classList.toggle('active')">No movement</button>
+        <button class="affect-tag" onclick="this.classList.toggle('active')">Good focus</button>
+        <button class="affect-tag" onclick="this.classList.toggle('active')">Flow state</button>
+        <button class="affect-tag" onclick="this.classList.toggle('active')">Social energy</button>
+        <button class="affect-tag" onclick="this.classList.toggle('active')">Rest</button>
+      </div>
+      <hr class="rule" style="margin-left:0;margin-right:0;">
+      <p class="pattern-text" style="padding:0;">Your best days tend to begin slowly.</p>
+    </div>
+  </div>
+</div>
+<script>
+const signals = { energy:-1, mood:-1, sleep:-1, focus:-1 };
+let planGenerated = false, generating = false;
+const d = new Date();
+const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+document.getElementById('date-display').textContent = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
+function setMode(m, btn) {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('morning-view').style.display = m === 'morning' ? 'block' : 'none';
+  const nv = document.getElementById('night-view');
+  nv.style.display = m === 'night' ? 'block' : 'none';
+  if (m === 'night') nv.classList.add('fade-in');
+}
+function setSignal(key, val, btn) {
+  signals[key] = val;
+  btn.closest('.signal-options').querySelectorAll('.sig-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (Object.values(signals).every(v => v >= 0) && !planGenerated && !generating) generatePlan();
+}
+function getScore() {
+  const s = Object.values(signals).reduce((a,b) => a+b, 0);
+  return s >= 6 ? 'high' : s >= 3 ? 'medium' : 'low';
+}
+function getDayLabel(score) {
+  if (score === 'high')   return ['High Output Day', 'Your energy is real. Use it with intention.'];
+  if (score === 'medium') return ['Steady Day', 'Slow pace. Focus on clarity, not output.'];
+  return ['Light Day', 'Restore, don\'t force. Everything can wait.'];
+}
+async function generatePlan() {
+  generating = true;
+  const score = getScore();
+  const [type, directive] = getDayLabel(score);
+  document.getElementById('day-type').innerHTML = `<em>${type}</em>`;
+  document.getElementById('day-directive').textContent = directive;
+  document.getElementById('loading-area').style.display = 'block';
+  document.getElementById('plan-area').style.display = 'none';
+  document.getElementById('error-area').style.display = 'none';
+  const labels = { energy:['Low','Medium','High'], mood:['Low','Neutral','Good'], sleep:['Poor','OK','Great'], focus:['Low','Medium','Sharp'] };
+  const sigText = Object.entries(signals).map(([k,v]) => `${k}: ${labels[k][v]}`).join(', ');
+  const prompt = `You are Rhythm, a minimal daily wellness guide. Signals: ${sigText} (day type: ${score}). Return ONLY a raw JSON object — no markdown, no backticks, no explanation: {"plan":{"body":"one line, max 10 words","work":"one line, max 10 words","mind":"one line, max 10 words","life":"one line, max 10 words"},"priority":"one direct actionable sentence, max 15 words","pattern":"one quiet observation, max 18 words, no exclamation marks"}`;
+  try {
+    const res = await fetch('/api/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 400, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    const raw = data.content?.find(b => b.type === 'text')?.text || '';
+    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    document.getElementById('loading-area').style.display = 'none';
+    const pc = document.getElementById('plan-content');
+    pc.innerHTML = ['Body','Work','Mind','Life'].map(cat =>
+      `<div class="plan-row"><span class="plan-cat">${cat}</span><span class="plan-text">${parsed.plan[cat.toLowerCase()]}</span></div>`
+    ).join('');
+    document.getElementById('action-text').textContent = parsed.priority;
+    document.getElementById('pattern-text').textContent = parsed.pattern;
+    const pa = document.getElementById('plan-area');
+    pa.style.display = 'block';
+    pa.classList.add('fade-in');
+    planGenerated = true;
+  } catch(e) {
+    document.getElementById('loading-area').style.display = 'none';
+    document.getElementById('error-area').style.display = 'block';
+    document.getElementById('error-msg').textContent = 'Could not load your plan. Check your connection and try again.';
+    generating = false;
+    planGenerated = false;
+  }
+  generating = false;
+}
+function pickNight(btn) {
+  btn.closest('.night-opts').querySelectorAll('.night-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
